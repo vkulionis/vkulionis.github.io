@@ -1,0 +1,62 @@
+---
+import { type CollectionEntry } from "astro:content";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import SocialList from "@/components/SocialList.astro";
+import { getAllPosts } from "@/data/post";
+import PageLayout from "@/layouts/Base.astro";
+import { collectionDateSort } from "@/utils/date";
+
+const allPosts = await getAllPosts();
+const latestPosts = allPosts.sort(collectionDateSort).slice(0, 3) as CollectionEntry<"post">[];
+
+const visualizations = [
+	{
+		title: "Full network",
+		description: "Interactive network view of industries, sectors, and linked factors.",
+		href: "/network_full.html",
+	},
+	{
+		title: "Linkages",
+		description: "Explore upstream and downstream linkages in the USEEIO-derived data.",
+		href: "/linkages.html",
+	},
+	{
+		title: "Factor flows",
+		description: "Review factor-flow results and supporting analysis views.",
+		href: "/flow_analysis.html",
+	},
+];
+---
+
+<PageLayout meta={{ title: "Home" }}>
+	<section>
+		<p class="mb-3 text-sm uppercase tracking-[0.3em] text-accent">USEEIO Analysis</p>
+		<h1 class="title mb-6">Economic network analysis and visualizations.</h1>
+		<p class="mb-4 max-w-2xl">
+			A lightweight Astro site for sharing USEEIO analysis outputs, interactive network pages,
+			and notes about how production factors, sectors, and linkages fit together.
+		</p>
+		<SocialList />
+	</section>
+
+	<section class="mt-16">
+		<h2 class="title mb-6 text-xl">Visualizations</h2>
+		<div class="grid gap-4 sm:grid-cols-3">
+			{
+				visualizations.map((item) => (
+					<a class="group rounded border border-line p-4 transition hover:border-accent" href={item.href}>
+						<h3 class="title mb-2 text-lg group-hover:text-accent">{item.title}</h3>
+						<p class="text-sm">{item.description}</p>
+					</a>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="mt-16">
+		<h2 class="title text-accent mb-6 text-xl"><a href="/posts/">Posts</a></h2>
+		<ul class="space-y-4" role="list">
+			{latestPosts.map((p) => <li class="grid gap-1 sm:grid-cols-[auto_1fr]"><PostPreview post={p} /></li>)}
+		</ul>
+	</section>
+</PageLayout>
