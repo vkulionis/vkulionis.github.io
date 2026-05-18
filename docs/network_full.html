@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry Network</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* Navbar */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: #fff;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 1000;
+        }
+        .app-title { font-size: 1.1rem; font-weight: 700; color: #1a1a1a; }
+        .nav-tabs { display: flex; gap: 4px; }
+        .nav-tab {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #666;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-tab a { color: inherit; text-decoration: none; }
+        .nav-tab:hover { color: #1a1a1a; }
+        .nav-tab.active {
+            color: #1a1a1a;
+            background: #f5f5f5;
+            border-bottom-color: transparent;
+            border-radius: 4px;
+        }
+        .nav-dropdown { position: relative; }
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 160px;
+            padding: 4px 0;
+            margin-top: 0;
+        }
+        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu:hover { display: block; }
+        .nav-dropdown-item {
+            display: block;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            color: #666;
+            text-decoration: none;
+        }
+        .nav-dropdown-item:hover { background: #f5f5f5; color: #1a1a1a; }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 52px);
+            margin-top: 52px;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .panel {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(12px);
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            pointer-events: auto;
+        }
+
+        .settings-toggle {
+            position: absolute;
+            top: 68px;
+            right: 16px;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #1a1a1a;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .settings-toggle:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        .settings-toggle .icon {
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .settings-toggle.open .icon {
+            transform: rotate(90deg);
+        }
+
+        .settings-panel {
+            position: absolute;
+            top: 68px;
+            right: 16px;
+            width: 280px;
+            max-height: calc(100vh - 84px);
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(12px);
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            pointer-events: auto;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+        }
+
+        .settings-panel.open {
+            display: flex;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e5e5;
+            flex-shrink: 0;
+        }
+
+        .settings-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .settings-close:hover {
+            color: #1a1a1a;
+        }
+
+        .settings-content {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .settings-section {
+            margin-bottom: 20px;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .control-group {
+            margin-bottom: 14px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: #0066cc;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #e5e5e5;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #0066cc;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
+            background: #f5f5f5;
+            border: 1px solid #e5e5e5;
+            color: #1a1a1a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #e5e5e5;
+            border-color: #ccc;
+        }
+
+        .btn.active {
+            background: #238636;
+            border-color: #238636;
+            color: #fff;
+        }
+
+        .stats-inline {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 8px 4px;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .stat-item .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: #7c3aed;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: block;
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.6rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .legend-inline {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 6px;
+            margin-bottom: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: background 0.15s;
+        }
+
+        .legend-item:hover {
+            background: rgba(0, 102, 204, 0.1);
+        }
+
+        .legend-item.active {
+            background: rgba(0, 102, 204, 0.15);
+        }
+
+        .legend-item.dimmed {
+            opacity: 0.3;
+        }
+
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .legend-count {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            color: #666;
+            font-size: 0.65rem;
+        }
+
+        .tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #e5e5e5;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            max-width: 300px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.15s;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            color: #1a1a1a;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+
+        .tooltip-sector {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-stats {
+            display: grid;
+            gap: 4px;
+        }
+
+        .tooltip-stat {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .tooltip-stat-label {
+            color: #666;
+        }
+
+        .tooltip-stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: #0066cc;
+        }
+
+        .search-box {
+            width: 100%;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            color: #1a1a1a;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .search-box:focus {
+            border-color: #0066cc;
+        }
+
+        .search-box::placeholder {
+            color: #999;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+    </style>
+</head>
+<body data-nav="network">
+    <div id="navbar"></div>
+    <script>
+        (function () {
+            const container = document.getElementById('navbar');
+            if (!container) return;
+            fetch('navbar.html')
+                .then(res => res.text())
+                .then(html => {
+                    container.innerHTML = html;
+                    const active = document.body.dataset.nav;
+                    if (!active) return;
+                    const activeEl = container.querySelector(`[data-nav="${active}"]`);
+                    if (activeEl) activeEl.classList.add('active');
+                });
+        })();
+    </script>
+
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        <svg id="overlay"></svg>
+        
+        <!-- Settings Toggle Button -->
+        <button class="settings-toggle" id="settings-toggle">
+            <span class="icon">⚙</span>
+            <span>Settings</span>
+        </button>
+
+        <!-- Unified Settings Panel -->
+        <div class="settings-panel" id="settings-panel">
+            <div class="settings-header">
+                <span class="settings-title">Settings</span>
+                <button class="settings-close" id="settings-close">×</button>
+            </div>
+            <div class="settings-content">
+                <!-- Stats Section -->
+                <div class="settings-section">
+                    <div class="section-label">Statistics</div>
+                    <div class="stats-inline">
+                        <div class="stat-item">
+                            <span class="stat-value" id="visible-nodes">411</span>
+                            <span class="stat-label">Industries</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="visible-links">0</span>
+                            <span class="stat-label">Links</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">$29T</span>
+                            <span class="stat-label">Output</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flow Type Section -->
+                <div class="settings-section">
+                    <div class="section-label">Flow Type</div>
+                    <div class="control-group">
+                        <select id="flow-type" class="search-box" style="cursor:pointer;">
+                            <option value="dollars">Dollar Flows</option>
+                            <option value="MSW">MSW (Municipal Solid Waste)</option>
+                            <option value="CDD">CDD (Construction Debris)</option>
+                            <option value="Hazardous">Hazardous Waste</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="settings-section">
+                    <div class="section-label">Search</div>
+                    <div class="control-group">
+                        <input type="text" class="search-box" id="search" placeholder="Search industries...">
+                    </div>
+                </div>
+
+                <!-- Display Settings -->
+                <div class="settings-section">
+                    <div class="section-label">Display</div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Min Flow</span>
+                            <span class="control-value" id="threshold-value">$5B</span>
+                        </div>
+                        <input type="range" id="threshold" min="0" max="100" step="1" value="5">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Node Size</span>
+                            <span class="control-value" id="size-value">1.0x</span>
+                        </div>
+                        <input type="range" id="node-size" min="0.3" max="2" step="0.1" value="1">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Link Opacity</span>
+                            <span class="control-value" id="opacity-value">30%</span>
+                        </div>
+                        <input type="range" id="link-opacity" min="5" max="80" step="5" value="30">
+                    </div>
+                    <div class="control-group">
+                        <div class="btn-row">
+                            <button class="btn" id="toggle-labels">Labels</button>
+                            <button class="btn active" id="toggle-physics">Physics</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="btn-row">
+                            <button class="btn" id="reset-btn">Reset</button>
+                            <button class="btn" id="center-btn">Center</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend Section -->
+                <div class="settings-section">
+                    <div class="section-label">Sectors</div>
+                    <div class="legend-inline" id="legend"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Flow type configuration
+        const flowTypeConfig = {
+            'dollars': {
+                name: 'Dollar Flows',
+                unit: 'Billion USD',
+                unitShort: 'B',
+                prefix: '$',
+                color: '#58a6ff',
+                minThreshold: 0,
+                maxThreshold: 100,
+                step: 1,
+                defaultThreshold: 5,
+                decimals: 0
+            },
+            'MSW': {
+                name: 'MSW Waste',
+                unit: 'Million Tons',
+                unitShort: 'Mt',
+                prefix: '',
+                color: '#2ecc71',
+                minThreshold: 0,
+                maxThreshold: 2,
+                step: 0.01,
+                defaultThreshold: 0.05,
+                decimals: 2
+            },
+            'CDD': {
+                name: 'CDD Waste',
+                unit: 'Million Tons',
+                unitShort: 'Mt',
+                prefix: '',
+                color: '#f1c40f',
+                minThreshold: 0,
+                maxThreshold: 15,
+                step: 0.05,
+                defaultThreshold: 0.05,
+                decimals: 2
+            },
+            'Hazardous': {
+                name: 'Hazardous Waste',
+                unit: 'Million Tons',
+                unitShort: 'Mt',
+                prefix: '',
+                color: '#e74c3c',
+                minThreshold: 0,
+                maxThreshold: 2,
+                step: 0.01,
+                defaultThreshold: 0.01,
+                decimals: 2
+            }
+        };
+
+        let currentFlowType = 'dollars';
+        let circularityData = null;
+        let graphData = { nodes: [], links: [] };
+        let allLinks = [];
+        
+        // State variables
+        let showLabels = false;
+        let physicsEnabled = true;
+        let selectedSector = null;
+        let searchTerm = '';
+        let threshold = flowTypeConfig['dollars'].defaultThreshold;
+        let nodeSizeMultiplier = 1;
+        let linkOpacity = 0.3;
+        let hoveredNode = null;
+        let transform = d3.zoomIdentity;
+
+        // Canvas setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('container');
+        
+        let width = container.clientWidth;
+        let height = container.clientHeight;
+        
+        canvas.width = width * window.devicePixelRatio;
+        canvas.height = height * window.devicePixelRatio;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+        // Load circularity data with flows
+        Promise.all([
+            fetch('graph_data_full.json').then(r => r.json()),
+            fetch('circularity_data.json').then(r => r.json())
+        ]).then(([graphFullData, circData]) => {
+            circularityData = circData;
+            
+            // Use industries from circularity data if available
+            if (circData.industries) {
+                graphData.nodes = circData.industries.map((ind, i) => ({
+                    id: i,
+                    name: ind.name,
+                    sector: ind.sector,
+                    color: getSectorColor(ind.sector),
+                    output: ind.output
+                }));
+            } else {
+                graphData.nodes = graphFullData.nodes;
+            }
+            
+            allLinks = graphFullData.links || [];
+            initializeGraph();
+        }).catch(err => {
+            console.error('Error loading data:', err);
+        });
+
+        function getSectorColor(sector) {
+            const colors = {
+                'Agriculture, Forestry, Fishing': '#2ecc71',
+                'Mining': '#8b4513',
+                'Utilities': '#f1c40f',
+                'Construction': '#e67e22',
+                'Manufacturing': '#3498db',
+                'Wholesale Trade': '#9b59b6',
+                'Retail Trade': '#e91e63',
+                'Transportation': '#00bcd4',
+                'Information': '#673ab7',
+                'Finance & Insurance': '#4caf50',
+                'Real Estate': '#795548',
+                'Professional Services': '#ff9800',
+                'Management': '#607d8b',
+                'Admin & Waste Services': '#009688',
+                'Education': '#3f51b5',
+                'Healthcare': '#f44336',
+                'Arts & Entertainment': '#ff5722',
+                'Accommodation & Food': '#ffc107',
+                'Other Services': '#9e9e9e',
+                'Government': '#1a237e'
+            };
+            return colors[sector] || '#888888';
+        }
+
+        function initializeGraph() {
+            updateThresholdDisplay();
+            updateVisibleLinks();
+            setupSimulation();
+            setupLegend();
+            setupControls();
+            setupSettingsPanel();
+            render();
+        }
+
+        function updateVisibleLinks() {
+            const config = flowTypeConfig[currentFlowType];
+            
+            // Use circularity_data.json for ALL flow types (has correct numeric indices and units)
+            if (circularityData && circularityData.flow_types && circularityData.flow_types[currentFlowType]) {
+                const flowData = circularityData.flow_types[currentFlowType];
+                const topFlows = flowData.top_flows || [];
+                
+                graphData.links = topFlows
+                    .filter(f => f.value >= threshold && f.from !== f.to)
+                    .map(f => ({
+                        source: f.from,
+                        target: f.to,
+                        value: f.value
+                    }));
+            } else {
+                graphData.links = [];
+            }
+            
+            document.getElementById('visible-links').textContent = graphData.links.length.toLocaleString();
+            document.getElementById('visible-nodes').textContent = graphData.nodes.length;
+        }
+
+        function updateThresholdDisplay() {
+            const config = flowTypeConfig[currentFlowType];
+            const thresholdEl = document.getElementById('threshold-value');
+            const formattedValue = config.decimals > 0 ? threshold.toFixed(config.decimals) : Math.round(threshold);
+            thresholdEl.textContent = `${config.prefix}${formattedValue}${config.unitShort}`;
+        }
+
+        let simulation;
+        
+        function setupSimulation() {
+            if (simulation) simulation.stop();
+            
+            simulation = d3.forceSimulation(graphData.nodes)
+                .force('link', d3.forceLink(graphData.links).id(d => d.id).distance(50).strength(0.3))
+                .force('charge', d3.forceManyBody().strength(-80).distanceMax(300))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(d => getNodeRadius(d) + 2))
+                .alphaDecay(0.02)
+                .on('tick', render);
+        }
+
+        function getNodeRadius(d) {
+            return (Math.sqrt(d.output) * 1.2 + 3) * nodeSizeMultiplier;
+        }
+
+        function setupLegend() {
+            const legend = document.getElementById('legend');
+            const sectors = [...new Set(graphData.nodes.map(n => n.sector))].sort();
+            const sectorCounts = {};
+            const sectorColors = {};
+            
+            graphData.nodes.forEach(n => {
+                sectorCounts[n.sector] = (sectorCounts[n.sector] || 0) + 1;
+                sectorColors[n.sector] = n.color;
+            });
+
+            legend.innerHTML = '';
+            
+            sectors.forEach(sector => {
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.dataset.sector = sector;
+                item.innerHTML = `
+                    <div class="legend-color" style="background: ${sectorColors[sector]}"></div>
+                    <span>${sector}</span>
+                    <span class="legend-count">${sectorCounts[sector]}</span>
+                `;
+                item.addEventListener('click', () => toggleSector(sector));
+                legend.appendChild(item);
+            });
+        }
+
+        function setupSettingsPanel() {
+            const toggle = document.getElementById('settings-toggle');
+            const panel = document.getElementById('settings-panel');
+            const closeBtn = document.getElementById('settings-close');
+
+            toggle.addEventListener('click', () => {
+                panel.classList.toggle('open');
+                toggle.classList.toggle('open');
+                toggle.style.display = panel.classList.contains('open') ? 'none' : 'flex';
+            });
+
+            closeBtn.addEventListener('click', () => {
+                panel.classList.remove('open');
+                toggle.classList.remove('open');
+                toggle.style.display = 'flex';
+            });
+        }
+
+        function toggleSector(sector) {
+            if (selectedSector === sector) {
+                selectedSector = null;
+                document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('dimmed', 'active'));
+            } else {
+                selectedSector = sector;
+                document.querySelectorAll('.legend-item').forEach(el => {
+                    el.classList.toggle('dimmed', el.dataset.sector !== sector);
+                    el.classList.toggle('active', el.dataset.sector === sector);
+                });
+            }
+            render();
+        }
+
+        function setupControls() {
+            // Flow type selector
+            const flowTypeSelect = document.getElementById('flow-type');
+            const thresholdSlider = document.getElementById('threshold');
+            
+            function updateThresholdSlider() {
+                const config = flowTypeConfig[currentFlowType];
+                thresholdSlider.min = config.minThreshold;
+                thresholdSlider.max = config.maxThreshold;
+                thresholdSlider.step = config.step;
+                thresholdSlider.value = config.defaultThreshold;
+                threshold = config.defaultThreshold;
+                updateThresholdDisplay();
+            }
+            
+            flowTypeSelect.addEventListener('change', (e) => {
+                currentFlowType = e.target.value;
+                updateThresholdSlider();
+                updateVisibleLinks();
+                setupSimulation();
+            });
+
+            // Threshold slider
+            thresholdSlider.addEventListener('input', (e) => {
+                threshold = parseFloat(e.target.value);
+                updateThresholdDisplay();
+                updateVisibleLinks();
+                simulation.force('link').links(graphData.links);
+                simulation.alpha(0.3).restart();
+            });
+
+            // Node size slider
+            const sizeSlider = document.getElementById('node-size');
+            const sizeValue = document.getElementById('size-value');
+            sizeSlider.addEventListener('input', (e) => {
+                nodeSizeMultiplier = parseFloat(e.target.value);
+                sizeValue.textContent = nodeSizeMultiplier.toFixed(1) + 'x';
+                render();
+            });
+
+            // Link opacity slider
+            const opacitySlider = document.getElementById('link-opacity');
+            const opacityValue = document.getElementById('opacity-value');
+            opacitySlider.addEventListener('input', (e) => {
+                linkOpacity = e.target.value / 100;
+                opacityValue.textContent = e.target.value + '%';
+                render();
+            });
+
+            // Search
+            document.getElementById('search').addEventListener('input', (e) => {
+                searchTerm = e.target.value.toLowerCase();
+                render();
+            });
+
+            // Buttons
+            document.getElementById('reset-btn').addEventListener('click', () => {
+                transform = d3.zoomIdentity;
+                selectedSector = null;
+                searchTerm = '';
+                document.getElementById('search').value = '';
+                document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('dimmed', 'active'));
+                simulation.alpha(0.3).restart();
+                render();
+            });
+
+            document.getElementById('toggle-labels').addEventListener('click', (e) => {
+                showLabels = !showLabels;
+                e.target.classList.toggle('active', showLabels);
+                render();
+            });
+
+            document.getElementById('toggle-physics').addEventListener('click', (e) => {
+                physicsEnabled = !physicsEnabled;
+                e.target.classList.toggle('active', physicsEnabled);
+                if (physicsEnabled) {
+                    simulation.alpha(0.3).restart();
+                } else {
+                    simulation.stop();
+                }
+            });
+
+            document.getElementById('center-btn').addEventListener('click', () => {
+                transform = d3.zoomIdentity;
+                render();
+            });
+
+            // Zoom behavior
+            const zoomBehavior = d3.zoom()
+                .scaleExtent([0.1, 8])
+                .on('zoom', (event) => {
+                    transform = event.transform;
+                    render();
+                });
+
+            d3.select(canvas).call(zoomBehavior);
+
+            // Mouse interactions
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseout', () => {
+                hoveredNode = null;
+                document.getElementById('tooltip').classList.remove('visible');
+                render();
+            });
+
+            // Drag behavior
+            d3.select(canvas).call(d3.drag()
+                .subject(dragsubject)
+                .on('start', dragstarted)
+                .on('drag', dragged)
+                .on('end', dragended));
+        }
+
+        function dragsubject(event) {
+            const [x, y] = transform.invert([event.x, event.y]);
+            return simulation.find(x, y, 20);
+        }
+
+        function dragstarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+        }
+
+        function dragged(event) {
+            const [x, y] = transform.invert([event.x, event.y]);
+            event.subject.fx = x;
+            event.subject.fy = y;
+        }
+
+        function dragended(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            if (physicsEnabled) {
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
+        }
+
+        function handleMouseMove(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            const [x, y] = transform.invert([mouseX, mouseY]);
+
+            let found = null;
+            for (const node of graphData.nodes) {
+                const r = getNodeRadius(node);
+                const dx = x - node.x;
+                const dy = y - node.y;
+                if (dx * dx + dy * dy < r * r) {
+                    found = node;
+                    break;
+                }
+            }
+
+            if (found !== hoveredNode) {
+                hoveredNode = found;
+                updateTooltip(event);
+                render();
+            } else if (hoveredNode) {
+                updateTooltip(event);
+            }
+        }
+
+        function updateTooltip(event) {
+            const tooltip = document.getElementById('tooltip');
+            if (!hoveredNode) {
+                tooltip.classList.remove('visible');
+                return;
+            }
+
+            const inbound = graphData.links.filter(l => l.target.id === hoveredNode.id || l.target === hoveredNode.id).length;
+            const outbound = graphData.links.filter(l => l.source.id === hoveredNode.id || l.source === hoveredNode.id).length;
+
+            const config = flowTypeConfig[currentFlowType];
+            const flowLabel = currentFlowType === 'dollars' ? 'Connections' : `${config.name} Links`;
+            
+            tooltip.innerHTML = `
+                <div class="tooltip-title">${hoveredNode.name}</div>
+                <div class="tooltip-sector" style="background: ${hoveredNode.color}22; color: ${hoveredNode.color}">${hoveredNode.sector}</div>
+                <div class="tooltip-stats">
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-label">Output</span>
+                        <span class="tooltip-stat-value">$${hoveredNode.output?.toFixed(1) || '0'}B</span>
+                    </div>
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-label">Inbound ${flowLabel}</span>
+                        <span class="tooltip-stat-value">${inbound}</span>
+                    </div>
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-label">Outbound ${flowLabel}</span>
+                        <span class="tooltip-stat-value">${outbound}</span>
+                    </div>
+                </div>
+            `;
+            
+            tooltip.style.left = (event.clientX + 15) + 'px';
+            tooltip.style.top = (event.clientY - 10) + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        function render() {
+            ctx.save();
+            ctx.clearRect(0, 0, width, height);
+            ctx.translate(transform.x, transform.y);
+            ctx.scale(transform.k, transform.k);
+
+            // Determine which nodes to highlight
+            const highlightedNodes = new Set();
+            const connectedNodes = new Set();
+            
+            if (hoveredNode) {
+                highlightedNodes.add(hoveredNode.id);
+                graphData.links.forEach(l => {
+                    const sourceId = l.source.id || l.source;
+                    const targetId = l.target.id || l.target;
+                    if (sourceId === hoveredNode.id) connectedNodes.add(targetId);
+                    if (targetId === hoveredNode.id) connectedNodes.add(sourceId);
+                });
+            }
+
+            if (searchTerm) {
+                graphData.nodes.forEach(n => {
+                    if (n.name.toLowerCase().includes(searchTerm)) {
+                        highlightedNodes.add(n.id);
+                    }
+                });
+            }
+
+            // Draw links
+            ctx.lineWidth = 0.5;
+            graphData.links.forEach(link => {
+                const sourceId = link.source.id || link.source;
+                const targetId = link.target.id || link.target;
+                const source = typeof link.source === 'object' ? link.source : graphData.nodes.find(n => n.id === link.source);
+                const target = typeof link.target === 'object' ? link.target : graphData.nodes.find(n => n.id === link.target);
+                
+                if (!source || !target) return;
+
+                let alpha = linkOpacity;
+                
+                if (hoveredNode) {
+                    if (sourceId === hoveredNode.id || targetId === hoveredNode.id) {
+                        alpha = 0.8;
+                        ctx.lineWidth = Math.sqrt(link.value) * 3;
+                    } else {
+                        alpha = 0.03;
+                    }
+                }
+
+                if (selectedSector) {
+                    const sourceNode = graphData.nodes.find(n => n.id === sourceId);
+                    const targetNode = graphData.nodes.find(n => n.id === targetId);
+                    if (sourceNode?.sector !== selectedSector && targetNode?.sector !== selectedSector) {
+                        alpha = 0.02;
+                    }
+                }
+
+                const flowColor = flowTypeConfig[currentFlowType].color;
+                const r = parseInt(flowColor.slice(1, 3), 16);
+                const g = parseInt(flowColor.slice(3, 5), 16);
+                const b = parseInt(flowColor.slice(5, 7), 16);
+                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                ctx.beginPath();
+                ctx.moveTo(source.x, source.y);
+                ctx.lineTo(target.x, target.y);
+                ctx.stroke();
+                ctx.lineWidth = 0.5;
+            });
+
+            // Draw nodes
+            graphData.nodes.forEach(node => {
+                const r = getNodeRadius(node);
+                let alpha = 1;
+                let strokeWidth = 1;
+                let strokeColor = 'rgba(255,255,255,0.2)';
+
+                if (hoveredNode) {
+                    if (node.id === hoveredNode.id) {
+                        strokeWidth = 3;
+                        strokeColor = '#fff';
+                    } else if (connectedNodes.has(node.id)) {
+                        strokeWidth = 2;
+                        strokeColor = 'rgba(255,255,255,0.6)';
+                    } else {
+                        alpha = 0.15;
+                    }
+                }
+
+                if (selectedSector && node.sector !== selectedSector) {
+                    alpha = 0.15;
+                }
+
+                if (searchTerm) {
+                    if (highlightedNodes.has(node.id)) {
+                        strokeWidth = 3;
+                        strokeColor = '#58a6ff';
+                    } else {
+                        alpha = 0.15;
+                    }
+                }
+
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = strokeWidth;
+                ctx.stroke();
+
+                ctx.globalAlpha = 1;
+            });
+
+            // Draw labels
+            if (showLabels || hoveredNode || searchTerm) {
+                ctx.font = '9px Inter';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+
+                graphData.nodes.forEach(node => {
+                    const r = getNodeRadius(node);
+                    let shouldShow = showLabels;
+                    let alpha = 0.7;
+
+                    if (hoveredNode) {
+                        if (node.id === hoveredNode.id || connectedNodes.has(node.id)) {
+                            shouldShow = true;
+                            alpha = 1;
+                        } else {
+                            shouldShow = false;
+                        }
+                    }
+
+                    if (searchTerm && highlightedNodes.has(node.id)) {
+                        shouldShow = true;
+                        alpha = 1;
+                    }
+
+                    if (selectedSector && node.sector !== selectedSector) {
+                        alpha = 0.2;
+                    }
+
+                    if (shouldShow) {
+                        ctx.globalAlpha = alpha;
+                        ctx.fillStyle = '#fff';
+                        ctx.fillText(node.name.substring(0, 30), node.x + r + 4, node.y);
+                        ctx.globalAlpha = 1;
+                    }
+                });
+            }
+
+            ctx.restore();
+        }
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            width = container.clientWidth;
+            height = container.clientHeight;
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            simulation.force('center', d3.forceCenter(width / 2, height / 2));
+            simulation.alpha(0.3).restart();
+        });
+    </script>
+</body>
+</html>
