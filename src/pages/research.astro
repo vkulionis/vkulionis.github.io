@@ -1,0 +1,152 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+
+const scholarProfile = "https://scholar.google.com/citations?user=FsDFWNoAAAAJ&hl=en";
+
+const researchAreas = [
+	"input-output analysis",
+	"energy and environment",
+	"sustainable development",
+	"environmental modelling",
+];
+
+const publications = [
+	{
+		title: "Global carbon footprints: a detailed look at affluence and technology effects",
+		authors: "V. Kulionis and E. Dietzenbacher",
+		venue: "Environmental Research Communications, 2025",
+		year: "2025",
+	},
+	{
+		title: "Biodiversity impact assessment for finance",
+		authors: "V. Kulionis, S. Pfister, and J. Fernandez",
+		venue: "Journal of Industrial Ecology, 2024",
+		year: "2024",
+	},
+	{
+		title: "Multiscale orientation values for biodiversity, climate and water: A scientific input for science-based targets",
+		authors: "V. Kulionis, A. Froemelt, and S. Pfister",
+		venue: "arXiv preprint arXiv:2403.11680, 2024",
+		year: "2024",
+	},
+	{
+		title: "Global Resources Outlook 2024: Bend the trend — Pathways to a liveable planet as resource use spikes",
+		authors: "H. H. D. Bruyninckx, S. Hellweg, S. Schandl, H. Vidal, B. Razian, H. Nohl, and contributors",
+		venue: "United Nations Environment Programme, 2024",
+		year: "2024",
+	},
+	{
+		title: "Mapping GHG emissions and prospects for renewable energy in the chemical industry",
+		authors: "F. Bauer, J. P. Tilsted, S. Pfister, C. Oberschelp, and V. Kulionis",
+		venue: "Current Opinion in Chemical Engineering, 2023",
+		year: "2023",
+	},
+	{
+		title: "A planetary boundary-based method to assess freshwater use at the global and local scales",
+		authors: "V. Kulionis and S. Pfister",
+		venue: "Environmental Research Letters, 2022",
+		year: "2022",
+	},
+	{
+		title: "Metals for low-carbon technologies: Environmental impacts and relation to planetary boundaries",
+		authors: "V. Schenker, V. Kulionis, C. Oberschelp, and S. Pfister",
+		venue: "Journal of Cleaner Production, 2022",
+		year: "2022",
+	},
+	{
+		title: "How trade policy can support the climate agenda",
+		authors: "M. Jakob, S. Afionis, M. Åhman, A. Antoci, M. Arens, F. Ascensão, and contributors",
+		venue: "Science, 2022",
+		year: "2022",
+	},
+	{
+		title: "The risk of carbon leakage in global climate agreements",
+		authors: "T. Nielsen, N. Baumert, A. Kander, M. Jiborn, and V. Kulionis",
+		venue: "International Environmental Agreements: Politics, Law and Economics, 2021",
+		year: "2021",
+	},
+	{
+		title: "Measuring the effects of energy transition: A structural decomposition analysis of the change in renewable energy use between 2000 and 2014",
+		authors: "E. Dietzenbacher, V. Kulionis, and F. Capurro",
+		venue: "Applied Energy, 2020",
+		year: "2020",
+	},
+	{
+		title: "Explaining decoupling in high income countries: A structural decomposition analysis of the change in energy footprint from 1970 to 2009",
+		authors: "V. Kulionis and R. Wood",
+		venue: "Energy, 2020",
+		year: "2020",
+	},
+	{
+		title: "Consumption versus technology: drivers of global carbon emissions 2000–2014",
+		authors: "M. Jiborn, V. Kulionis, and A. Kander",
+		venue: "Energies, 2020",
+		year: "2020",
+	},
+	{
+		title: "Global outsourcing of carbon emissions 1995–2009: A reassessment",
+		authors: "N. Baumert, A. Kander, M. Jiborn, V. Kulionis, and T. Nielsen",
+		venue: "Environmental Science & Policy, 2019",
+		year: "2019",
+	},
+	{
+		title: "Decoupling or delusion? Measuring emissions displacement in foreign trade",
+		authors: "M. Jiborn, A. Kander, V. Kulionis, H. Nielsen, and D. D. Moran",
+		venue: "Global Environmental Change, 2018",
+		year: "2018",
+	},
+	{
+		title: "International trade and energy intensity during European industrialization, 1870–1935",
+		authors: "A. Kander, P. Warde, S. T. Henriques, H. Nielsen, V. Kulionis, and S. Hagen",
+		venue: "Ecological Economics, 2017",
+		year: "2017",
+	},
+];
+
+const meta = {
+	description: "Research publications and Google Scholar profile for Viktoras Kulionis.",
+	title: "Research",
+};
+---
+
+<PageLayout meta={meta}>
+	<section>
+		<p class="mb-3 text-sm uppercase tracking-[0.3em] text-accent">Research</p>
+		<h1 class="title mb-6">Research</h1>
+		<p class="mb-4 max-w-2xl">
+			My research focuses on environmental and economic systems, including input-output analysis,
+			energy transitions, carbon footprints, planetary boundaries, biodiversity impacts, and sustainable development.
+		</p>
+		<p class="text-sm">
+			Source: <a class="cactus-link" href={scholarProfile} rel="noreferrer" target="_blank">Google Scholar profile</a>
+			<span class="text-muted"> · Institute of Environmental Engineering, ETH Zürich · cited by 971 on Google Scholar when checked</span>
+		</p>
+	</section>
+
+	<section class="mt-12">
+		<h2 class="title mb-4 text-xl">Research areas</h2>
+		<div class="flex flex-wrap gap-2">
+			{
+				researchAreas.map((area) => (
+					<span class="rounded border border-line px-3 py-1 text-sm text-muted">{area}</span>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="mt-12">
+		<h2 class="title mb-6 text-xl">Selected publications</h2>
+		<ol class="space-y-5" role="list">
+			{
+				publications.map((publication) => (
+					<li class="border-b border-line pb-5 last:border-b-0">
+						<div class="text-muted text-xs font-semibold uppercase tracking-[0.2em]">{publication.year}</div>
+						<h3 class="title mt-1 text-base">{publication.title}</h3>
+						<p class="mt-1 text-sm">{publication.authors}</p>
+						<p class="text-muted mt-1 text-sm">{publication.venue}</p>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+</PageLayout>
