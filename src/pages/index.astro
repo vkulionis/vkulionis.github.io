@@ -95,13 +95,13 @@ const workHighlights = [
 			<h2 class="title text-xl">Work</h2>
 			<a class="cactus-link text-sm" href="/work/">View all</a>
 		</div>
-		<ul class="grid gap-4 sm:grid-cols-2" role="list">
+		<ul class="space-y-3" role="list">
 			{
 				workHighlights.map((item) => (
-					<li>
-						<a class="group block rounded border border-line p-4 transition hover:border-accent" href={item.href}>
-							<h3 class="title mb-2 text-lg group-hover:text-accent">{item.title}</h3>
-							<p class="text-sm">{item.description}</p>
+					<li class="border-b border-line pb-3 last:border-b-0">
+						<a class="group block" href={item.href}>
+							<h3 class="title text-base group-hover:text-accent">{item.title}</h3>
+							<p class="text-muted mt-1 text-sm">{item.description}</p>
 						</a>
 					</li>
 				))
