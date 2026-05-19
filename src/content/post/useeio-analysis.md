@@ -1,15 +1,16 @@
 ---
-title: "USEEIO analysis workspace"
-description: "A short overview of the analysis pages published on this site."
+title: "USEEIO network analysis"
+description: "A short overview of one analysis project published on this personal site."
 publishDate: "2026-05-18"
 tags: ["useeio", "input-output", "network-analysis"]
 pinned: true
 ---
 
-This site publishes a small set of USEEIO analysis artifacts as static pages:
+USEEIO network analysis is one example project on this personal site. It publishes a small set of static analysis artifacts:
 
-- [Full network visualization](/useeio-analysis/network_full.html)
-- [Linkages explorer](/useeio-analysis/linkages.html)
-- [Factor-flow analysis](/useeio-analysis/flow_analysis.html)
+- [Visualizations overview](/visualizations/)
+- [Full network visualization](/network_full.html)
+- [Linkages explorer](/linkages.html)
+- [Factor-flow analysis](/flow_analysis.html)
 
-The repository keeps the research assets alongside an Astro front end so the main page can act as a clean entry point for the analysis outputs.
+The repository keeps the research assets alongside an Astro front end so the site can act as a clean entry point for selected work.

@@ -9,42 +9,32 @@ import { collectionDateSort } from "@/utils/date";
 const allPosts = await getAllPosts();
 const latestPosts = allPosts.sort(collectionDateSort).slice(0, 3) as CollectionEntry<"post">[];
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
-const visualizations = [
+const work = [
 	{
-		title: "Full network",
-		description: "Interactive network view of industries, sectors, and linked factors.",
-		href: `${basePath}/network_full.html`,
-	},
-	{
-		title: "Linkages",
-		description: "Explore upstream and downstream linkages in the USEEIO-derived data.",
-		href: `${basePath}/linkages.html`,
-	},
-	{
-		title: "Factor flows",
-		description: "Review factor-flow results and supporting analysis views.",
-		href: `${basePath}/flow_analysis.html`,
+		title: "USEEIO network analysis",
+		description:
+			"An input-output analysis project with interactive network, linkage, and factor-flow visualizations.",
+		href: "/work/#useeio",
 	},
 ];
 ---
 
 <PageLayout meta={{ title: "Home" }}>
 	<section>
-		<p class="mb-3 text-sm uppercase tracking-[0.3em] text-accent">USEEIO Analysis</p>
-		<h1 class="title mb-6">Economic network analysis and visualizations.</h1>
+		<p class="mb-3 text-sm uppercase tracking-[0.3em] text-accent">Personal website</p>
+		<h1 class="title mb-6">Viktoras Kulionis</h1>
 		<p class="mb-4 max-w-2xl">
-			A lightweight Astro site for sharing USEEIO analysis outputs, interactive network pages,
-			and notes about how production factors, sectors, and linkages fit together.
+			I build analytical tools and data-driven projects. This site is a simple home for selected
+			work, notes, and experiments.
 		</p>
 		<SocialList />
 	</section>
 
 	<section class="mt-16">
-		<h2 class="title mb-6 text-xl">Visualizations</h2>
-		<div class="grid gap-4 sm:grid-cols-3">
+		<h2 class="title mb-6 text-xl">Selected work</h2>
+		<div class="grid gap-4 sm:grid-cols-2">
 			{
-				visualizations.map((item) => (
+				work.map((item) => (
 					<a class="group rounded border border-line p-4 transition hover:border-accent" href={item.href}>
 						<h3 class="title mb-2 text-lg group-hover:text-accent">{item.title}</h3>
 						<p class="text-sm">{item.description}</p>
@@ -52,10 +42,13 @@ const visualizations = [
 				))
 			}
 		</div>
+		<p class="mt-4 text-sm">
+			All USEEIO interactive outputs are grouped on the <a class="cactus-link" href="/visualizations/">visualizations page</a>.
+		</p>
 	</section>
 
 	<section class="mt-16">
-		<h2 class="title text-accent mb-6 text-xl"><a href={`${basePath}/posts/`}>Posts</a></h2>
+		<h2 class="title text-accent mb-6 text-xl"><a href="/posts/">Latest posts</a></h2>
 		<ul class="space-y-4" role="list">
 			{latestPosts.map((p) => <li class="grid gap-1 sm:grid-cols-[auto_1fr]"><PostPreview post={p} /></li>)}
 		</ul>

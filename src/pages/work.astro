@@ -1,0 +1,26 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+
+const meta = {
+	description: "Selected work by Viktoras Kulionis.",
+	title: "Work",
+};
+---
+
+<PageLayout meta={meta}>
+	<h1 class="title mb-12">Work</h1>
+	<div class="space-y-10">
+		<section id="useeio" class="rounded border border-line p-5">
+			<p class="mb-3 text-sm uppercase tracking-[0.3em] text-accent">Example project</p>
+			<h2 class="title mb-3 text-xl">USEEIO network analysis</h2>
+			<p class="mb-4 text-sm">
+				A static analysis workspace for exploring USEEIO-derived economic networks, linkages,
+				and factor-flow outputs. This is one example of my work, not the identity of the whole site.
+			</p>
+			<div class="flex flex-wrap gap-3 text-sm">
+				<a class="cactus-link" href="/visualizations/">Open visualizations</a>
+				<a class="cactus-link" href="/posts/useeio-analysis/">Read project note</a>
+			</div>
+		</section>
+	</div>
+</PageLayout>

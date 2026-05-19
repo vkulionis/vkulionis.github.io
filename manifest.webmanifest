@@ -1,5 +1,5 @@
 {
-  "name": "USEEIO Analysis",
+  "name": "Viktoras Kulionis",
   "icons": [
     {
       "src": "icons/apple-touch-icon.png",
@@ -18,7 +18,7 @@
     }
   ],
   "short_name": "Astro_Cactus",
-  "description": "Notes, visualizations, and network analysis built around USEEIO data.",
+  "description": "Personal website for Viktoras Kulionis: projects, writing, and selected work.",
   "lang": "en-GB",
   "start_url": "/",
   "theme_color": "#2bbc8a",

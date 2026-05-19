@@ -2,7 +2,7 @@
 import PageLayout from "@/layouts/Base.astro";
 
 const meta = {
-	description: "About the USEEIO Analysis site",
+	description: "About Viktoras Kulionis and this personal website.",
 	title: "About",
 };
 ---
@@ -11,17 +11,16 @@ const meta = {
 	<h1 class="title mb-12">About</h1>
 	<div class="prose prose-sm prose-cactus max-w-none">
 		<p>
-			This site collects analysis artifacts built around USEEIO data: interactive network pages,
-			factor-flow outputs, linkage views, and project notes.
+			This is the personal website of Viktoras Kulionis: a simple place for selected work,
+			writing, and experiments.
 		</p>
 		<p>
-			The site now uses the <a class="cactus-link" href="https://github.com/chrismwilliams/astro-theme-cactus" rel="noreferrer" target="_blank">Astro Cactus theme</a>,
-			with the previous static analysis pages preserved as public assets.
+			The USEEIO analysis is one project example. Its interactive outputs are kept together on a
+			separate <a class="cactus-link" href="/visualizations/">visualizations page</a> so the homepage
+			can stay focused on the broader personal profile.
 		</p>
-		<ul class="list-inside list-disc" role="list">
-			<li><a class="cactus-link" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/network_full.html`}>Full network visualization</a></li>
-			<li><a class="cactus-link" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/linkages.html`}>Linkages explorer</a></li>
-			<li><a class="cactus-link" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/flow_analysis.html`}>Factor-flow analysis</a></li>
-		</ul>
+		<p>
+			The site is built with Astro and published through GitHub Pages.
+		</p>
 	</div>
 </PageLayout>

@@ -2,10 +2,10 @@ import type { AstroExpressiveCodeOptions } from "astro-expressive-code";
 import type { SiteConfig } from "@/types";
 
 export const siteConfig: SiteConfig = {
-	url: "https://vkulionis.github.io/useeio-analysis/",
-	title: "USEEIO Analysis",
+	url: "https://vkulionis.github.io/",
+	title: "Viktoras Kulionis",
 	author: "Viktoras Kulionis",
-	description: "Notes, visualizations, and network analysis built around USEEIO data.",
+	description: "Personal website for Viktoras Kulionis: projects, writing, and selected work.",
 	lang: "en-GB",
 	ogLocale: "en_GB",
 	date: {
@@ -18,15 +18,12 @@ export const siteConfig: SiteConfig = {
 	},
 };
 
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
-
 export const menuLinks: { path: string; title: string }[] = [
-	{ path: `${basePath}/`, title: "Home" },
-	{ path: `${basePath}/about/`, title: "About" },
-	{ path: `${basePath}/posts/`, title: "Posts" },
-	{ path: `${basePath}/network_full.html`, title: "Network" },
-	{ path: `${basePath}/linkages.html`, title: "Linkages" },
-	{ path: `${basePath}/flow_analysis.html`, title: "Flows" },
+	{ path: "/", title: "Home" },
+	{ path: "/work/", title: "Work" },
+	{ path: "/visualizations/", title: "Visualizations" },
+	{ path: "/about/", title: "About" },
+	{ path: "/posts/", title: "Posts" },
 ];
 
 export const expressiveCodeOptions: AstroExpressiveCodeOptions = {

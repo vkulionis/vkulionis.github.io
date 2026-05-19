@@ -1,0 +1,53 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+
+const visualizations = [
+	{
+		title: "Full network",
+		description: "Interactive network view of industries, sectors, and linked factors.",
+		href: "/network_full.html",
+	},
+	{
+		title: "Linkages",
+		description: "Explore upstream and downstream linkages in the USEEIO-derived data.",
+		href: "/linkages.html",
+	},
+	{
+		title: "Factor flows",
+		description: "Review factor-flow results and supporting analysis views.",
+		href: "/flow_analysis.html",
+	},
+	{
+		title: "Network visualization",
+		description: "Earlier network visualization page kept for reference.",
+		href: "/network_visualization.html",
+	},
+];
+
+const meta = {
+	description: "Interactive visualizations from Viktoras Kulionis's USEEIO analysis work.",
+	title: "Visualizations",
+};
+---
+
+<PageLayout meta={meta}>
+	<h1 class="title mb-6">Visualizations</h1>
+	<div class="prose prose-sm prose-cactus mb-10 max-w-none">
+		<p>
+			This page collects interactive visual outputs from selected work. The current set comes from
+			the USEEIO network analysis project; the personal homepage stays separate from these project
+			artifacts.
+		</p>
+	</div>
+
+	<div class="grid gap-4 sm:grid-cols-2">
+		{
+			visualizations.map((item) => (
+				<a class="group rounded border border-line p-4 transition hover:border-accent" href={item.href}>
+					<h2 class="title mb-2 text-lg group-hover:text-accent">{item.title}</h2>
+					<p class="text-sm">{item.description}</p>
+				</a>
+			))
+		}
+	</div>
+</PageLayout>
