@@ -6,9 +6,8 @@ tags: ["useeio", "input-output", "network-analysis"]
 pinned: true
 ---
 
-USEEIO network analysis is one example project on this personal site. It publishes a small set of static analysis artifacts:
+USEEIO network analysis is one example project on this personal site. It publishes a small set of static analysis artifacts under [Work](/work/#useeio-visualizations):
 
-- [Visualizations overview](/visualizations/)
 - [Full network visualization](/network_full.html)
 - [Linkages explorer](/linkages.html)
 - [Factor-flow analysis](/flow_analysis.html)
